@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="vue.js"></script>
+    <style>
+        *{
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .box{
+            width: 400px;
+            height: 30px;
+            margin: 0 auto;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .box input{
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+            outline: none;
+        }
+        ul{
+
+            width: 400px;
+            height: auto;
+            margin: 0 auto;
+        }
+        ul li {
+            width: 100%;
+            height: 30px;
+            margin-top: 10px;
+            border-bottom: 1px solid #2e6da4;
+        }
+        ul li span{
+            display: block;
+
+        }
+        ul li span:first-child{
+            width: 15px;
+            height: 15px;
+            border: 1px solid #5bc0de;
+            margin-top: 8px;
+            border-radius: 50%;
+            float: left;
+            cursor: pointer;
+        }
+        ul li span:nth-of-type(2){
+            height: 100%;
+            width: auto;
+            line-height: 30px;
+            float: left;
+        }
+        ul li span:nth-of-type(3){
+            height: 100%;
+            width: auto;
+            line-height: 30px;
+            float: right;
+            cursor: pointer;
+        }
+        .btn{
+            width: 400px;
+            height: 30px;
+            margin: 20px auto 0px;
+            overflow: hidden;
+
+        }
+        .btn button{
+            height: 80%;
+            width: auto;
+            float: right;
+            margin-right: 5px;
+            background: #a6e1ec;
+            border: none;
+            outline: none;
+            border-radius: 4px;
+        }
+        .none{
+            width: 400px;
+            margin: 0 auto;
+        }
+        .red{
+            background: red;
+            color: red;
+        }
+        input{
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="box">
+            <input type="text" @keydown.13="add()" v-model="con" placeholder="请输入内容">
+        </div>
+        <div class="btn">
+            <button @click="changeStatus(0)" :class="{red:status=='0'}">未完成</button>
+            <button @click="changeStatus(1)" :class="{red:status=='1'}">完成</button>
+            <button @click="changeStatus('all')" :class="{red:status=='all'}">全部</button>
+        </div>
+        <ul>
+            <li v-show="all.length>0" v-for="item in datas">
+                <div v-if="item.edit" @dblclick="edit(item)">
+                    <span @click="changeState(item)" :class="{red:item.state==1}"></span>
+                    <span>{{item.title}}</span>
+                    <span @click="del(item.id)">删除</span>
+                </div>
+                <div v-else>
+                    <input type="text" v-model="item.title" @blur="edit(item)">
+                </div>
+
+            </li>
+        </ul>
+        <div v-show="all.length==0" class="none">没有数据</div>
+    </div>
+    <script>
+        new Vue({
+            el:"#root",
+            data:{
+                all:localStorage.todo?JSON.parse(localStorage.todo):[],
+                con:"",
+                status:"all",
+            },
+            methods:{
+                add(){
+                    if(!this.con){
+                        alert("请输入信息");
+                        return;
+                    }
+                    var obj = {};
+                    obj.id = Math.random() + new Date().getTime();
+                    obj.title = this.con;
+                    obj.state = 0;
+                    obj.edit=true;
+                    this.all.push(obj);
+                    this.con = "";
+                    localStorage.todo=JSON.stringify(this.all);
+                },
+                changeStatus(type){
+                    this.status = type;
+                },
+                changeState(obj){
+                    if(obj.state==0){
+                        obj.state=1
+                    }else{
+                        obj.state=0
+                    }
+                    localStorage.todo=JSON.stringify(this.all);
+                },
+                del(id){
+                    this.all = this.all.filter(function (a) {
+                        if(a.id!=id){
+                            return a;
+                        }
+                    })
+                    localStorage.todo=JSON.stringify(this.all);
+                },
+                edit(obj){
+                    obj.edit=!obj.edit;
+                    localStorage.todo=JSON.stringify(this.all);
+                }
+
+
+            },
+            mounted(){
+                localStorage.todo=JSON.stringify(this.all);
+            },
+            computed: {
+                datas: function () {
+                    var that = this;
+                    return this.all.filter(function (a) {
+                        if (that.status == "all") {
+                            return a;
+                        } else {
+                            if (a.state == that.status) {
+                                return a;
+                            }
+                        }
+                    })
+                }
+            }
+
+        })
+    </script>
+</body>
+</html>

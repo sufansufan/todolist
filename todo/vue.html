@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+<body>
+    <div class="root">
+       <span v-on:click="aa">{{one}}</span>+<span v-on:click="bb">{{two}}</span>={{result}}<br>
+        <input type="text" v-model="div">
+        <custom :con="div"></custom>
+    </div>
+    <script>
+        //全局的组件
+        Vue.component("custom",{
+            props:{
+                con:[Strig,Number],
+            },
+            template:`<div @click="change">{{name}}</div>`,
+            data(){
+                return{
+                   name:this.con,
+                }
+            },
+            methods:{
+                change(){
+                    this.name = "lisi";
+                }
+            }
+        })
+        new Vue({
+            el:".root",
+            data:{
+                one:0,
+                two:0,
+                result:0,
+                div:"div23r4413"
+            },
+            //局部的组件
+            components:{
+
+            },
+            methods:{
+                aa(){
+                    return this.one = this.one*1+1;
+                },
+                bb(){
+                    return this.two = this.two*1+1;
+                }
+            },
+            watch:{
+                one(val1,val2){
+                    return this.result = this.one*1+this.two*1;
+                },
+                two(val1,val2){
+                    return this.result = this.one*1+this.two*1;
+                }
+            }
+
+        })
+    </script>
+</body>
+</html>
